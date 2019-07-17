@@ -102,14 +102,69 @@ if __name__ == '__main__':
         image = canvas
         # feed image into the neural network
         humans = e.inference(image)  # list of humans
+
         for id, human in enumerate(humans):
+
+            # Create variable to store y coordinate information
+            # using nose as it is a singular point 
+
+            nose = 1
+            right_wrist = 1
+            left_wrist = 1
+
+
+            # create loop to run through all keys and values in human 
+            for key , val in human.body_parts.items():
+
+                # if "Nose" is the current key 
+                if POSE_COCO_BODY_PARTS[key] == "Nose":
+                    # the variable nose  =  the y cordinate of the Nose. The y value of key Nose  
+                    nose = val.y
+                    print(nose)
+
+                # if "RWrist" is the current key 
+                elif POSE_COCO_BODY_PARTS[key] == "RWrist":
+                    # the variable right_wrist  =  the y cordinate of the RWrist. The y value of key RWrist 
+                    right_wrist = val.y
+                    print(right_wrist)
+
+                # if "LWrist" is the current key 
+                elif POSE_COCO_BODY_PARTS[key] == "LWrist":
+                    # the variable left_wrist  =  the y cordinate of the LWrist. The y value of key LWrist 
+                    left_wrist = val.y 
+                    print(left_wrist)
+
+            # Set trigger rules for when a cab is being hailed 
+            # The reason for using less than instead of greather than the 0,0 coordinate is the top left of the window 
+            if right_wrist < nose or left_wrist < nose:
+                hail_taxi(image)
+
+
+
+            # my_list = [(POSE_COCO_BODY_PARTS[k], v.x, v.y) for k,v in human.body_parts.items()]
+            # print(my_list)
+
+            # RE = 16
+            # LE = 17
+
+            # RW = 4
+            # LW = 7
+            
+            # for key, val in human.body_parts.items():
+            #     print(human.body_parts[1].y)
+            #     print()
+
+            # for k, v in human.body_parts.items():
+            #     print(POSE_COCO_BODY_PARTS[k])
+            #     print(v.y)
+              
 
             # TODO ensure it only does this when someone is hailing a taxi.
             # That is, an arm is above their head.
-            hail_taxi(image)
+            #hail_taxi(image)
 
             # Debugging statement: remove before demonstration.
-            # print([(POSE_COCO_BODY_PARTS[k], v.x, v.y) for k,v in human.body_parts.items()])
+            #print([(POSE_COCO_BODY_PARTS[k], v.x, v.y) for k,v in human.body_parts.items()])
 
         # drawing lines on an image
         image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
